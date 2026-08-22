@@ -81,6 +81,7 @@ public class Main {
 
         
         Instant startTime = Instant.now();
+        int wrongSelection = 0; 
 
         while (true) {
             
@@ -134,8 +135,10 @@ public class Main {
                 System.out.println("\n-> You found a match!");
             } else {
                 System.out.println("\n-> Not a match (or invalid card selection), try again.");
+                wrongSelection ++;
             }
         }
+        System.out.println(" You made the wrong choice " + wrongSelection + " times" );
 
         Instant endTime = Instant.now();
         Duration duration = Duration.between(startTime, endTime);
