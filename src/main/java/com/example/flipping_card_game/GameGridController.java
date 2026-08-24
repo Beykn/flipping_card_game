@@ -4,16 +4,14 @@ import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 
 import java.time.Instant;
 import java.util.Random;
 
-public class FlippingCardGame {
+public class GameGridController {
 
-    @FXML private TextField pairInputField;
     @FXML private Label statusLabel;
     @FXML private GridPane cardGrid;
 
@@ -29,23 +27,9 @@ public class FlippingCardGame {
 
     private Instant startTime;
     private boolean isProcessing = false;
-    @FXML
-    protected void onStartGameClick() {
-        try {
-            totalPairs = Integer.parseInt(pairInputField.getText());
-            if (totalPairs < 1 || totalPairs > 30) {
-                statusLabel.setText("Please enter a number between 1 and 30!");
-                return;
-            }
-        } catch (NumberFormatException e) {
-            statusLabel.setText("Invalid number format!");
-            return;
-        }
 
-        setupGame(totalPairs);
-    }
-
-    private void setupGame(int input) {
+    public void setupGame(int input) {
+        this.totalPairs = input;
         cardGrid.getChildren().clear();
         firstSelectedButton = null;
         matchedPairsCount = 0;
@@ -99,7 +83,7 @@ public class FlippingCardGame {
                 matrix[r][c] = array3[arrayIndex++];
 
                 Button btn = new Button(" ");
-                btn.setPrefSize(100, 100);
+                btn.setPrefSize(90, 90);
                 btn.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
                 final int rPos = r;
@@ -115,14 +99,10 @@ public class FlippingCardGame {
         statusLabel.setText("Game started! Select a card.");
     }
 
-
     private void handleCardClick(int r, int c, Button clickedButton) {
-
-
         if (isProcessing || !clickedButton.getText().equals(" ") || clickedButton.isDisabled()) {
             return;
         }
-
 
         clickedButton.setText(String.valueOf(matrix[r][c]));
 
@@ -143,13 +123,12 @@ public class FlippingCardGame {
                 if (matchedPairsCount == totalPairs) {
                     Instant endTime = Instant.now();
                     long seconds = java.time.Duration.between(startTime, endTime).toSeconds();
-                    statusLabel.setText(" Completed in " + seconds + " seconds!");
+                    statusLabel.setText("Completed in " + seconds + " seconds!");
                 }
             } else {
-
                 statusLabel.setText("Not a match!");
                 isProcessing = true;
-                noMatching ++;
+                noMatching++;
 
                 statusLabel.setText("You choose " + noMatching + " times wrong card !");
                 Button b1 = firstSelectedButton;
@@ -165,13 +144,6 @@ public class FlippingCardGame {
                 });
                 pause.play();
             }
-
         }
-//TODO: make box size responsive
-//TODO: after click the start button it should be disappear , it is in .fxml file
-//TODO: if it is necessary change UI or design
-//TODO: add "settings" for change the grid
-//TODO: add user information bar etc
     }
-
 }
