@@ -18,11 +18,15 @@ public class StartController {
     @FXML private TextField pairInputField;
     @FXML private Label statusLabel;
     @FXML private ChoiceBox<String> difficultyChoiceBox;
+    @FXML private ChoiceBox<String> cardChoiceBox;
 
     @FXML
     public void initialize(){
         difficultyChoiceBox.getItems().addAll("Easy", "Medium", "Hard");
         difficultyChoiceBox.setValue("Medium");
+
+        cardChoiceBox.getItems().addAll("Animal","Pokemon","Custom");
+        cardChoiceBox.setValue("Animal");
     }
 
     @FXML
@@ -46,12 +50,17 @@ public class StartController {
             // Yeni Controller'a veri aktarımı
             GameGridController gameController = loader.getController();
             String selectedDifficulty = difficultyChoiceBox.getValue();
-            gameController.setupGame(totalPairs , selectedDifficulty);
+            String selectedTheme = cardChoiceBox.getValue();
+            gameController.setupGame(totalPairs , selectedDifficulty,selectedTheme);
 
             // Sayfa değiştirme
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
+
             stage.show();
+
+            // PENCEREYİ İÇERİĞE GÖRE OTOMATİK BÜYÜTÜR:
+            stage.sizeToScene();
 
         } catch (IOException e) {
             e.printStackTrace();

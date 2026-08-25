@@ -6,6 +6,8 @@ import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 
@@ -34,8 +36,18 @@ public class GameGridController {
     private Timeline timer;                // zamanlayıcı
     private long secondsElapsed = 0;
     private boolean isProcessing = false;
+    private String cardPath;
 
-    public void setupGame(int input, String difficulty) {
+    public void setupGame(int input, String difficulty, String card) {
+
+        // Gelen temaya göre klasör yolunu ayarlıyoruz
+        if ("Pokemon".equalsIgnoreCase(card)) {
+            this.cardPath = "/com/example/flipping_card_game/img/pokemon/";
+        } else {
+            // Varsayılan: Animal
+            this.cardPath = "/com/example/flipping_card_game/img/animal/";
+        }
+
         this.totalPairs = input;
         cardGrid.getChildren().clear();
         firstSelectedButton = null;
@@ -102,6 +114,25 @@ public class GameGridController {
         statusLabel.setText("Game started! Select a card.");
     }
 
+    private ImageView getCradImageView(int cardValue) {
+        String imagePath = cardPath + cardValue + ".png";
+        var stream = getClass().getResourceAsStream(imagePath);
+
+        if (stream == null) {
+            System.err.println("Image not found : " + imagePath);
+            return new ImageView(); // Çökmeyi önlemek için boş dön
+        }
+
+        Image image = new Image(stream);
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(60);
+        imageView.setFitHeight(60);
+        imageView.setPreserveRatio(true);
+
+        return imageView;
+    }
+
+
     private void gameChallenge(int totalCards, String challenge) {
 
         if ("Easy".equalsIgnoreCase(challenge) ) {
@@ -110,7 +141,7 @@ public class GameGridController {
             cols = totalCards / 2;
         } else if ("Medium".equalsIgnoreCase(challenge) ) {
             cardFlipDelay = 1.5;
-            if (cols % 4 == 0){
+            if (totalCards % 4 == 0){
                 rows = 4;
                 cols = totalCards / 4;
             }
@@ -118,7 +149,7 @@ public class GameGridController {
                 calculateSquareGrid(totalCards);
             }
         } else if ("Hard".equalsIgnoreCase(challenge)){
-            cardFlipDelay = 0.8;
+            cardFlipDelay = 0.5;
             calculateSquareGrid(totalCards);
         }
 
@@ -155,11 +186,12 @@ public class GameGridController {
     }
 
     private void handleCardClick(int r, int c, Button clickedButton) {
-        if (isProcessing || !clickedButton.getText().equals(" ") || clickedButton.isDisabled()) {
+        if (isProcessing || clickedButton.getGraphic() != null || clickedButton.isDisabled()) {
             return;
         }
 
-        clickedButton.setText(String.valueOf(matrix[r][c]));
+        int cardValue = matrix[r][c];
+        clickedButton.setGraphic(getCradImageView(cardValue));
 
         if (firstSelectedButton == null) {
             firstSelectedButton = clickedButton;
@@ -189,8 +221,9 @@ public class GameGridController {
 
                 PauseTransition pause = new PauseTransition(Duration.seconds(cardFlipDelay));
                 pause.setOnFinished(e -> {
-                    b1.setText(" ");
-                    b2.setText(" ");
+                    b1.setGraphic(null);
+                    b2.setGraphic(null);
+
                     firstSelectedButton = null;
                     isProcessing = false;
                     statusLabel.setText("Select a card.");

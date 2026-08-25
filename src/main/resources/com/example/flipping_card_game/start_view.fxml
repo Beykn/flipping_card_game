@@ -31,6 +31,12 @@
          <ChoiceBox fx:id="difficultyChoiceBox" prefHeight="26.0" prefWidth="166.0" />
       </children>
    </HBox>
+   <HBox layoutX="30.0" layoutY="112.0" prefHeight="0.0" prefWidth="227.0">
+      <children>
+         <Label prefHeight="26.0" prefWidth="63.0" text="Cards:" />
+         <ChoiceBox fx:id="cardChoiceBox" prefHeight="26.0" prefWidth="166.0" />
+      </children>
+   </HBox>
 
   <Label fx:id="statusLabel" text="Enter pairs and click Start!" />
 </VBox>
