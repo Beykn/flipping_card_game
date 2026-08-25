@@ -1,6 +1,8 @@
 package com.example.flipping_card_game;
 
+import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,6 +15,8 @@ import java.util.Random;
 public class GameGridController {
 
     @FXML private Label statusLabel;
+    @FXML private Label timerLabel;
+    @FXML private Label wrongAttemptsLabel;
     @FXML private GridPane cardGrid;
 
     private int[][] matrix;
@@ -21,20 +25,28 @@ public class GameGridController {
     private int matchedPairsCount;
     private int totalPairs;
     private int noMatching = 0;
+    private  double cardFlipDelay = 1.0;
 
     private Button firstSelectedButton = null;
     private int firstRow = -1, firstCol = -1;
 
     private Instant startTime;
+    private Timeline timer;                // zamanlayıcı
+    private long secondsElapsed = 0;
     private boolean isProcessing = false;
 
-    public void setupGame(int input) {
+    public void setupGame(int input, String difficulty) {
         this.totalPairs = input;
         cardGrid.getChildren().clear();
         firstSelectedButton = null;
         matchedPairsCount = 0;
         noMatching = 0;
         isProcessing = false;
+        secondsElapsed = 0;
+
+
+        updateScoreboard();
+        startTimer();
 
         int totalCards = input * 2;
         int[] array1 = new int[input];
@@ -64,15 +76,7 @@ public class GameGridController {
             array3[input + i] = array2[i];
         }
 
-        rows = 1;
-        cols = totalCards;
-        for (int i = (int) Math.sqrt(totalCards); i >= 1; i--) {
-            if (totalCards % i == 0) {
-                rows = i;
-                cols = totalCards / i;
-                break;
-            }
-        }
+        gameChallenge(totalCards ,difficulty);
 
         matrix = new int[rows][cols];
         buttons = new Button[rows][cols];
@@ -95,8 +99,59 @@ public class GameGridController {
             }
         }
 
-        startTime = Instant.now();
         statusLabel.setText("Game started! Select a card.");
+    }
+
+    private void gameChallenge(int totalCards, String challenge) {
+
+        if ("Easy".equalsIgnoreCase(challenge) ) {
+            cardFlipDelay = 2.0;
+            rows = 2;
+            cols = totalCards / 2;
+        } else if ("Medium".equalsIgnoreCase(challenge) ) {
+            cardFlipDelay = 1.5;
+            if (cols % 4 == 0){
+                rows = 4;
+                cols = totalCards / 4;
+            }
+            else {
+                calculateSquareGrid(totalCards);
+            }
+        } else if ("Hard".equalsIgnoreCase(challenge)){
+            cardFlipDelay = 0.8;
+            calculateSquareGrid(totalCards);
+        }
+
+    }
+    private void calculateSquareGrid(int totalCards) {
+        for (int i = (int) Math.sqrt(totalCards); i >= 1; i--) {
+            if (totalCards % i == 0) {
+                rows = i;
+                cols = totalCards / i;
+                break;
+            }
+        }
+    }
+
+    private void startTimer() {
+        if (timer != null) {
+            timer.stop();
+        }
+        startTime = Instant.now();
+        timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            secondsElapsed++;
+            if (timerLabel != null) {
+                timerLabel.setText("Time: " + secondsElapsed + "s");
+            }
+        }));
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
+    }
+
+    private void updateScoreboard() {
+        if (wrongAttemptsLabel != null) {
+            wrongAttemptsLabel.setText("Wrong Attempts: " + noMatching);
+        }
     }
 
     private void handleCardClick(int r, int c, Button clickedButton) {
@@ -121,20 +176,18 @@ public class GameGridController {
                 matchedPairsCount++;
 
                 if (matchedPairsCount == totalPairs) {
-                    Instant endTime = Instant.now();
-                    long seconds = java.time.Duration.between(startTime, endTime).toSeconds();
-                    statusLabel.setText("Completed in " + seconds + " seconds!");
+                    if (timer != null) timer.stop();
                 }
             } else {
                 statusLabel.setText("Not a match!");
                 isProcessing = true;
                 noMatching++;
+                updateScoreboard();
 
-                statusLabel.setText("You choose " + noMatching + " times wrong card !");
                 Button b1 = firstSelectedButton;
                 Button b2 = clickedButton;
 
-                PauseTransition pause = new PauseTransition(Duration.seconds(1));
+                PauseTransition pause = new PauseTransition(Duration.seconds(cardFlipDelay));
                 pause.setOnFinished(e -> {
                     b1.setText(" ");
                     b2.setText(" ");
@@ -146,4 +199,5 @@ public class GameGridController {
             }
         }
     }
+
 }

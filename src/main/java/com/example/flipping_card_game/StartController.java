@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -16,6 +17,13 @@ public class StartController {
 
     @FXML private TextField pairInputField;
     @FXML private Label statusLabel;
+    @FXML private ChoiceBox<String> difficultyChoiceBox;
+
+    @FXML
+    public void initialize(){
+        difficultyChoiceBox.getItems().addAll("Easy", "Medium", "Hard");
+        difficultyChoiceBox.setValue("Medium");
+    }
 
     @FXML
     protected void onStartGameClick(ActionEvent event) {
@@ -37,9 +45,10 @@ public class StartController {
 
             // Yeni Controller'a veri aktarımı
             GameGridController gameController = loader.getController();
-            gameController.setupGame(totalPairs);
+            String selectedDifficulty = difficultyChoiceBox.getValue();
+            gameController.setupGame(totalPairs , selectedDifficulty);
 
-            // Sahne değiştirme
+            // Sayfa değiştirme
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
