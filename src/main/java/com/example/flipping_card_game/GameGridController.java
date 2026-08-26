@@ -8,8 +8,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
+
+
+import java.net.URL;
+import javafx.scene.media.AudioClip;
 
 import java.time.Instant;
 import java.util.Random;
@@ -37,6 +42,7 @@ public class GameGridController {
     private long secondsElapsed = 0;
     private boolean isProcessing = false;
     private String cardPath;
+
 
     public void setupGame(int input, String difficulty, String card) {
 
@@ -114,6 +120,27 @@ public class GameGridController {
         statusLabel.setText("Game started! Select a card.");
     }
 
+
+
+    private void playSoundEffect(String soundFileName){
+        try {
+            String path = "/com/example/flipping_card_game/sound_effect/" + soundFileName;
+            URL resource = getClass().getResource(path);
+
+            if(resource != null){
+                AudioClip clip = new AudioClip(resource.toExternalForm());
+                clip.play();
+
+            }else{
+                System.out.println("File not found : " + path);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
     private ImageView getCradImageView(int cardValue) {
         String imagePath = cardPath + cardValue + ".png";
         var stream = getClass().getResourceAsStream(imagePath);
@@ -186,7 +213,11 @@ public class GameGridController {
     }
 
     private void handleCardClick(int r, int c, Button clickedButton) {
+        playSoundEffect("click.wav");
+
         if (isProcessing || clickedButton.getGraphic() != null || clickedButton.isDisabled()) {
+            PauseTransition soundDelay = new PauseTransition(Duration.millis(250));
+            playSoundEffect("select_already_open.wav");
             return;
         }
 
@@ -195,12 +226,16 @@ public class GameGridController {
 
         if (firstSelectedButton == null) {
             firstSelectedButton = clickedButton;
+
             firstRow = r;
             firstCol = c;
         } else {
+
             if (firstRow == r && firstCol == c) return;
 
             if (matrix[firstRow][firstCol] == matrix[r][c]) {
+                PauseTransition soundDelay = new PauseTransition(Duration.millis(250));
+                playSoundEffect("matched.wav");
                 statusLabel.setText("Match found!");
                 firstSelectedButton.setDisable(true);
                 clickedButton.setDisable(true);
@@ -211,6 +246,8 @@ public class GameGridController {
                     if (timer != null) timer.stop();
                 }
             } else {
+                PauseTransition soundDelay = new PauseTransition(Duration.millis(250));
+                playSoundEffect("not_matched.wav");
                 statusLabel.setText("Not a match!");
                 isProcessing = true;
                 noMatching++;
