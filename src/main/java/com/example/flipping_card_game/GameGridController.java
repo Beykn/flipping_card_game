@@ -9,7 +9,9 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.util.Duration;
 
 
@@ -116,7 +118,8 @@ public class GameGridController {
                 matrix[r][c] = array3[arrayIndex++];
 
                 Button btn = new Button(" ");
-                btn.setPrefSize(90, 90);
+                //change the stable size
+                btn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 btn.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
                 final int rPos = r;
@@ -126,6 +129,22 @@ public class GameGridController {
                 buttons[r][c] = btn;
                 cardGrid.add(btn, c, r);
             }
+        }
+        //flexible row and column size
+        cardGrid.getColumnConstraints().clear();
+        cardGrid.getRowConstraints().clear();
+
+        for (int c = 0; c < cols; c++){
+            javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
+            cc.setHgrow(Priority.ALWAYS);
+            cc.setPercentWidth(100.0 / cols);
+            cardGrid.getColumnConstraints().add(cc);
+        }
+        for (int r = 0; r < rows; r++) {
+            javafx.scene.layout.RowConstraints rc = new javafx.scene.layout.RowConstraints();
+            rc.setVgrow(Priority.ALWAYS);
+            rc.setPercentHeight(100.0 / rows);
+            cardGrid.getRowConstraints().add(rc);
         }
 
         statusLabel.setText("Game started! Select a card.");
@@ -152,7 +171,7 @@ public class GameGridController {
 
     }
 
-    private ImageView getCradImageView(int cardValue) {
+    private ImageView getCradImageView(int cardValue, Button button) {
         String imagePath = cardPath + cardValue + ".png";
         var stream = getClass().getResourceAsStream(imagePath);
 
@@ -163,9 +182,11 @@ public class GameGridController {
 
         Image image = new Image(stream);
         ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(60);
-        imageView.setFitHeight(60);
         imageView.setPreserveRatio(true);
+
+        imageView.fitWidthProperty().bind(button.widthProperty().multiply(0.6));
+        imageView.fitHeightProperty().bind(button.heightProperty().multiply(0.6));
+
 
         return imageView;
     }
@@ -222,7 +243,7 @@ public class GameGridController {
         }
 
         int cardValue = matrix[r][c];
-        clickedButton.setGraphic(getCradImageView(cardValue));
+        clickedButton.setGraphic(getCradImageView(cardValue, clickedButton));
 
         if (firstSelectedButton == null) {
             firstSelectedButton = clickedButton;
