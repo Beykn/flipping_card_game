@@ -1,4 +1,4 @@
-/*
+
 package com.example.flipping_card_game;
 
 import java.io.IOException;
@@ -52,4 +52,3 @@ public class ChangeFileName {
     }
 }
 
- */
