@@ -10,8 +10,8 @@ import java.io.IOException;
 public class FlippingCardGameApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(FlippingCardGameApplication.class.getResource("flipping_card_game-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        FXMLLoader fxmlLoader = new FXMLLoader(FlippingCardGameApplication.class.getResource("start_view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("FLIPPING CARD GAME");
         stage.setScene(scene);
         stage.show();

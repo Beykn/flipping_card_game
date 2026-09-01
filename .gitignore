@@ -5,3 +5,5 @@ out/
 target/
 
 .DS_Store
+
+src/main/resources/com/example/flipping_card_game/img
