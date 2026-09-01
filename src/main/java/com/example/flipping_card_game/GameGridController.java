@@ -44,7 +44,7 @@ public class GameGridController {
     private String cardPath;
 
 
-    public void setupGame(int input, String difficulty, String card) {
+    public void setupGame( String difficulty, String card) {
 
         // Gelen temaya göre klasör yolunu ayarlıyoruz
         if ("Pokemon".equalsIgnoreCase(card)) {
@@ -54,7 +54,7 @@ public class GameGridController {
             this.cardPath = "/com/example/flipping_card_game/img/animal/";
         }
 
-        this.totalPairs = input;
+        int input = 0;
         cardGrid.getChildren().clear();
         firstSelectedButton = null;
         matchedPairsCount = 0;
@@ -66,7 +66,18 @@ public class GameGridController {
         updateScoreboard();
         startTimer();
 
-        int totalCards = input * 2;
+        int totalCards = 0;
+
+        if(difficulty.equalsIgnoreCase("Easy")){
+            input = 4;
+        }
+        else if(difficulty.equalsIgnoreCase("Easy")){
+            input = 12;
+        }else{
+            input = 24;
+        }
+
+        totalCards = input * 2;
         int[] array1 = new int[input];
         int[] array2 = new int[input];
         int[] array3 = new int[totalCards];
@@ -165,31 +176,20 @@ public class GameGridController {
         if ("Easy".equalsIgnoreCase(challenge) ) {
             cardFlipDelay = 2.0;
             rows = 2;
-            cols = totalCards / 2;
+            cols = 4;
         } else if ("Medium".equalsIgnoreCase(challenge) ) {
             cardFlipDelay = 1.5;
-            if (totalCards % 4 == 0){
-                rows = 4;
-                cols = totalCards / 4;
-            }
-            else {
-                calculateSquareGrid(totalCards);
-            }
+            rows = 4;
+            cols = 6;
+
         } else if ("Hard".equalsIgnoreCase(challenge)){
             cardFlipDelay = 0.5;
-            calculateSquareGrid(totalCards);
+            rows = 6;
+            cols = 8;
         }
 
     }
-    private void calculateSquareGrid(int totalCards) {
-        for (int i = (int) Math.sqrt(totalCards); i >= 1; i--) {
-            if (totalCards % i == 0) {
-                rows = i;
-                cols = totalCards / i;
-                break;
-            }
-        }
-    }
+
 
     private void startTimer() {
         if (timer != null) {

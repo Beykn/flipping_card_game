@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class StartController {
 
-    @FXML private TextField pairInputField;
+
     @FXML private Label statusLabel;
     @FXML private ChoiceBox<String> difficultyChoiceBox;
     @FXML private ChoiceBox<String> cardChoiceBox;
@@ -31,17 +31,7 @@ public class StartController {
 
     @FXML
     protected void onStartGameClick(ActionEvent event) {
-        int totalPairs;
-        try {
-            totalPairs = Integer.parseInt(pairInputField.getText().trim());
-            if (totalPairs < 1 || totalPairs > 30) {
-                statusLabel.setText("Please enter a number between 1 and 30!");
-                return;
-            }
-        } catch (NumberFormatException e) {
-            statusLabel.setText("Invalid number format!");
-            return;
-        }
+
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("game_grid.fxml"));
@@ -51,7 +41,7 @@ public class StartController {
             GameGridController gameController = loader.getController();
             String selectedDifficulty = difficultyChoiceBox.getValue();
             String selectedTheme = cardChoiceBox.getValue();
-            gameController.setupGame(totalPairs , selectedDifficulty,selectedTheme);
+            gameController.setupGame( selectedDifficulty,selectedTheme);
 
             // Sayfa değiştirme
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
