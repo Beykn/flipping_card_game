@@ -22,5 +22,5 @@
 
     <Label fx:id="statusLabel" text="Game started! Select a card." style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
-    <GridPane fx:id="cardGrid" alignment="CENTER" hgap="10.0" vgap="10.0"/>
+    <GridPane fx:id="cardGrid" VBox.vgrow="ALWAYS" alignment="CENTER" hgap="10.0" vgap="10.0"/>
 </VBox>
