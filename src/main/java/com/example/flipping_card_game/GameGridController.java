@@ -15,6 +15,7 @@ import javafx.scene.layout.Priority;
 import javafx.util.Duration;
 
 
+import java.io.File;
 import java.net.URL;
 import javafx.scene.media.AudioClip;
 
@@ -44,17 +45,9 @@ public class GameGridController {
     private long secondsElapsed = 0;
     private boolean isProcessing = false;
     private String cardPath;
-
+    private boolean isCustomTheme = false;
 
     public void setupGame( String difficulty, String card) {
-
-        // Gelen temaya göre klasör yolunu ayarlıyoruz
-        if ("Pokemon".equalsIgnoreCase(card)) {
-            this.cardPath = "/com/example/flipping_card_game/img/pokemon/";
-        } else {
-            // Varsayılan: Animal
-            this.cardPath = "/com/example/flipping_card_game/img/animal/";
-        }
 
         int input = 0;
         cardGrid.getChildren().clear();
@@ -63,7 +56,7 @@ public class GameGridController {
         noMatching = 0;
         isProcessing = false;
         secondsElapsed = 0;
-
+        totalPairs = input; // Oyunun biteceği toplam çift sayısı
 
         updateScoreboard();
         startTimer();
@@ -77,6 +70,27 @@ public class GameGridController {
             input = 12;
         }else{
             input = 24;
+        }
+
+
+        // Seçilen temaya göre yapılacak işlem
+        // Gelen temaya göre klasör yolunu ayarlıyoruz
+        if ("Pokemon".equalsIgnoreCase(card)) {
+            this.cardPath = "/com/example/flipping_card_game/img/pokemon/";
+            this.isCustomTheme = false;
+        } else if ("Animal".equalsIgnoreCase(card)) {
+            this.cardPath = "/com/example/flipping_card_game/img/animal/";
+            this.isCustomTheme = false;
+        } else {
+            // Custom seçildiyse kullanıcının galerisinden resim seçtirip hazırlıyoruz
+            this.isCustomTheme = true;
+            boolean success = CustomImageManager.selectAndPrepareCustomImages(cardGrid.getScene().getWindow(), input);
+            if (!success) {
+                if (statusLabel != null) {
+                    statusLabel.setText("Custom resim seçimi iptal edildi!");
+                }
+                return;
+            }
         }
 
         totalCards = input * 2;
@@ -172,15 +186,28 @@ public class GameGridController {
     }
 
     private ImageView getCradImageView(int cardValue, Button button) {
-        String imagePath = cardPath + cardValue + ".png";
-        var stream = getClass().getResourceAsStream(imagePath);
+        Image image;
 
-        if (stream == null) {
-            System.err.println("Image not found : " + imagePath);
-            return new ImageView(); // Çökmeyi önlemek için boş dön
+        if(isCustomTheme){
+            //geçici klasördeki dosyalar
+            File imageFile = new File(CustomImageManager.getTempFolder(),cardValue + ".png");
+            if(!imageFile.exists()){
+                System.err.println("Image not found: " +imageFile.getAbsolutePath());
+                return new ImageView();
+            }
+            image = new Image(imageFile.toURI().toString());
+        }else{
+
+            String imagePath = cardPath + cardValue + ".png";
+            var stream = getClass().getResourceAsStream(imagePath);
+
+            if (stream == null) {
+                System.err.println("Image not found : " + imagePath);
+                return new ImageView(); // Çökmeyi önlemek için boş dön
+            }
+           image = new Image(stream);
         }
 
-        Image image = new Image(stream);
         ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
 
