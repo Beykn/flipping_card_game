@@ -14,6 +14,7 @@ public class FlippingCardGameApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("FLIPPING CARD GAME");
         stage.setScene(scene);
+        stage.centerOnScreen();
         stage.show();
     }
 }

@@ -4,6 +4,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -12,6 +16,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
@@ -47,7 +53,14 @@ public class GameGridController {
     private String cardPath;
     private boolean isCustomTheme = false;
 
+    //I will use these to the reset button
+    private String lastDifficulty = "Easy";
+    private String lastCardTheme = "Animal";
+
     public void setupGame( String difficulty, String card) {
+
+        this.lastDifficulty = difficulty;
+        this.lastCardTheme = card;
 
         int input = 0;
         cardGrid.getChildren().clear();
@@ -149,13 +162,13 @@ public class GameGridController {
         cardGrid.getRowConstraints().clear();
 
         for (int c = 0; c < cols; c++){
-            javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
+            ColumnConstraints cc = new ColumnConstraints();
             cc.setHgrow(Priority.ALWAYS);
             cc.setPercentWidth(100.0 / cols);
             cardGrid.getColumnConstraints().add(cc);
         }
         for (int r = 0; r < rows; r++) {
-            javafx.scene.layout.RowConstraints rc = new javafx.scene.layout.RowConstraints();
+            RowConstraints rc = new RowConstraints();
             rc.setVgrow(Priority.ALWAYS);
             rc.setPercentHeight(100.0 / rows);
             cardGrid.getRowConstraints().add(rc);
@@ -205,7 +218,7 @@ public class GameGridController {
                 System.err.println("Image not found : " + imagePath);
                 return new ImageView(); // Çökmeyi önlemek için boş dön
             }
-           image = new Image(stream);
+            image = new Image(stream);
         }
 
         ImageView imageView = new ImageView(image);
@@ -317,5 +330,55 @@ public class GameGridController {
             }
         }
     }
+
+    //RESET
+    @FXML
+    private void handleResetButton(){
+        if(timer != null){
+            timer.stop();
+        }
+
+        //pause transitions
+        firstSelectedButton = null;
+        isProcessing = false;
+        matchedPairsCount = 0;
+        noMatching = 0;
+        secondsElapsed = 0;
+
+        setupGame(lastDifficulty, lastCardTheme);
+
+        statusLabel.setText("Game Reset ! ");
+    }
+
+    //Main Menu
+    @FXML
+    private void handleMainMenuButton(javafx.event.ActionEvent event){
+        try{
+            if(timer != null){
+                timer.stop();
+            }
+            // Ana menü FXML dosyası
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("start_view.fxml"));
+            Parent root = loader.load();
+
+            //  Mevcut Stage'i alıp Ana Menü sahnesine geçiş yaptı
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+
+            stage.centerOnScreen();
+
+            stage.show();
+
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            if (statusLabel != null) {
+                statusLabel.setText("Ana menüye dönerken hata oluştu!");
+            }
+        }
+    }
+
+
+
+
 
 }

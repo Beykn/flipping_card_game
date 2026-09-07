@@ -53,6 +53,8 @@ public class StartController {
             // Böylece cardGrid.getScene().getWindow() ifadesi null dönmez!
             gameController.setupGame(selectedDifficulty, selectedTheme);
 
+            stage.centerOnScreen();
+
             stage.show();
 
         } catch (IOException e) {
