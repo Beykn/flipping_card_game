@@ -3,12 +3,15 @@ package com.example.flipping_card_game;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,7 +29,10 @@ import java.net.URL;
 import javafx.scene.media.AudioClip;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.Random;
+
+
 
 public class GameGridController {
 
@@ -52,12 +58,15 @@ public class GameGridController {
     private boolean isProcessing = false;
     private String cardPath;
     private boolean isCustomTheme = false;
+    private boolean isCancelled = false;
 
     //I will use these to the reset button
     private String lastDifficulty = "Easy";
     private String lastCardTheme = "Animal";
 
     public void setupGame( String difficulty, String card) {
+
+        Stage stage = (Stage) cardGrid.getScene().getWindow();
 
         this.lastDifficulty = difficulty;
         this.lastCardTheme = card;
@@ -95,16 +104,36 @@ public class GameGridController {
             this.cardPath = "/com/example/flipping_card_game/img/animal/";
             this.isCustomTheme = false;
         } else {
+            //center the grid
+            stage.centerOnScreen();
             // Custom seçildiyse kullanıcının galerisinden resim seçtirip hazırlıyoruz
             this.isCustomTheme = true;
-            boolean success = CustomImageManager.selectAndPrepareCustomImages(cardGrid.getScene().getWindow(), input);
+            //stop timer until the choose images
+            timer.stop();
+            boolean success = CustomImageManager.selectAndPrepareCustomImages(null, input);
             if (!success) {
                 if (statusLabel != null) {
-                    statusLabel.setText("Custom resim seçimi iptal edildi!");
+                    statusLabel.setText("Image selected cancelled!");
+                    isCancelled = true;
+                }
+                if(isCancelled){
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Logout");
+                    alert.setHeaderText("You are about the logout !");
+                    alert.setContentText("Do you want to save before exiting ");
+
+                    if(alert.showAndWait().get() == ButtonType.OK){
+                        Platform.exit();
+                        System.exit(0);
+                    }
                 }
                 return;
             }
+            //start timer again
+            startTimer();
         }
+
+
 
         totalCards = input * 2;
         int[] array1 = new int[input];
@@ -175,6 +204,20 @@ public class GameGridController {
         }
 
         statusLabel.setText("Game started! Select a card.");
+
+
+        // --- PENCEREYİ MASAÜSTÜNÜN TAM ORTASINA ALAN KESİN KOD ---
+        // Bütün nesneler oluşturulup Scene yüklendikten SONRA çalışır
+        Platform.runLater(() -> {
+            if (cardGrid != null && cardGrid.getScene() != null) {
+
+                if (stage != null) {
+                    stage.sizeToScene();   // İçerik boyutunu yeniden hesapla
+                    stage.centerOnScreen(); // Ekranın tam ortasına yerleştir
+                }
+            }
+        });
+
     }
 
 
@@ -220,6 +263,7 @@ public class GameGridController {
             }
             image = new Image(stream);
         }
+
 
         ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
@@ -298,9 +342,12 @@ public class GameGridController {
                 PauseTransition soundDelay = new PauseTransition(Duration.millis(250));
                 playSoundEffect("matched.wav");
                 statusLabel.setText("Match found!");
-                firstSelectedButton.setDisable(true);
+                //firstSelectedButton.setDisable(true);
                 clickedButton.setDisable(true);
+                //move this line here because after matched user could be chosen directly new card
+                firstSelectedButton.setDisable(true);
                 firstSelectedButton = null;
+
                 matchedPairsCount++;
 
                 if (matchedPairsCount == totalPairs) {
