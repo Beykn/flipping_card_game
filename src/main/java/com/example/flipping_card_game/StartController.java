@@ -39,30 +39,22 @@ public class StartController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("game_grid.fxml"));
             Parent root = loader.load();
 
-            // Yeni Controller'a veri aktarımı
             GameGridController gameController = loader.getController();
             String selectedDifficulty = difficultyChoiceBox.getValue();
             String selectedTheme = cardChoiceBox.getValue();
-            gameController.setupGame( selectedDifficulty,selectedTheme);
 
-            // Sayfa değiştirme
+            // 1. Önce sahneyi (Scene) oluşturun ve Stage'e yerleştirin
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            //User's active screen resolution
-            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-
-            //screen resolution % 80
-            double windowWidth = screenBounds.getWidth() * 0.8;
-            double windowHeight = screenBounds.getHeight() * 0.8;
-
-            //create screen with this resolution
-            Scene scene = new Scene(root, windowWidth, windowHeight);
+            Scene scene = new Scene(root, 900, 700);
             stage.setScene(scene);
-
-            stage.setX((screenBounds.getWidth() - windowWidth) / 2);
-            stage.setY((screenBounds.getHeight() - windowHeight) / 2);
-
             stage.setResizable(true);
+
+            // 2. Sahne ekrana yüklendikten SONRA setupGame metodunu çağırın
+            // Böylece cardGrid.getScene().getWindow() ifadesi null dönmez!
+            gameController.setupGame(selectedDifficulty, selectedTheme);
+
+            stage.centerOnScreen();
+
             stage.show();
 
         } catch (IOException e) {
