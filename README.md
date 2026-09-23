@@ -8,26 +8,26 @@
 
 - **Dynamic Difficulty Levels:**
     - **Easy:** 8 Cards (2x4 Grid) — 2.0s card preview delay.
-    - **Medium:** 24 Cards (4x6 Grid) — 1.5s card preview delay[cite: 3].
-    - **Hard:** 48 Cards (6x8 Grid) — 0.5s card preview delay[cite: 3].
+    - **Medium:** 24 Cards (4x6 Grid) — 1.5s card preview delay .
+    - **Hard:** 48 Cards (6x8 Grid) — 0.5s card preview delay.
 
 - **Multiple Visual Themes:**
-    - **Built-in Themes:** Pokemon and Animal themes[cite: 3].
+    - **Built-in Themes:** Pokemon and Animal themes.
     - **Custom Theme:** Load your own custom images directly from your computer gallery.
 
 - **In-Game Metrics & Experience:**
-    - **Timer:** Tracks your completion time in seconds[cite: 3].
-    - **Wrong Attempts Counter:** Counts unmatched flip attempts[cite: 3].
-    - **Sound Effects:** Dedicated audio cues for clicks, successful matches, wrong picks, and already opened cards[cite: 3].
-    - **Responsive Grid:** Dynamic layout that automatically resizes and aligns based on grid size and window dimensions[cite: 3].
+    - **Timer:** Tracks your completion time in seconds.
+    - **Wrong Attempts Counter:** Counts unmatched flip attempts.
+    - **Sound Effects:** Dedicated audio cues for clicks, successful matches, wrong picks, and already opened cards.
+    - **Responsive Grid:** Dynamic layout that automatically resizes and aligns based on grid size and window dimensions.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Language:** Java 17+[cite: 3]
-- **GUI Framework:** JavaFX[cite: 3]
-- **UI Design:** FXML & Scene Builder[cite: 3]
+- **Language:** Java 17+
+- **GUI Framework:** JavaFX
+- **UI Design:** FXML & Scene Builder
 - **Build Tool:** Maven
 
 ---
@@ -37,7 +37,7 @@
 ### Prerequisites
 
 - Java Development Kit (JDK) 17 or higher
-- Maven (or wrapper `./mvnw`)[cite: 1]
+- Maven (or wrapper `./mvnw`)
 
 ### Installation
 
